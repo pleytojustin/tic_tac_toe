@@ -23,8 +23,6 @@ def levelOne(mapVal,move):
                     if(x_bot == None):
                         x_bot, y_bot = moveViaPriority(mapVal,priorityMoves)
 
-
-                     
                     mapVal = move.addX(mapVal,x_bot,y_bot)              
                 move.moveNow = "O"
                 printMaze(mapVal)

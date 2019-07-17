@@ -5,6 +5,7 @@ def levelTwo(mapVal,move):
     validity = False
     #least to best 
     priorityMoves = [(1,1), (0,0), (0,2), (2,0), (2,2), (0,1), (1,0), (2,1), (1,2)]
+
     while(move.checkMapIfWin(mapVal) == False and move.checkIfDraw(mapVal) == False):
         try:
             if(move.moveNow == "X"):
@@ -21,7 +22,7 @@ def levelTwo(mapVal,move):
                     if(x_bot == None):
                         x_bot, y_bot = checkBlockingMove(mapVal,"O")
                     if(x_bot == None):
-                        x_bot, y_bot = moveViaPriority(mapVal,priorityMoves,"X")
+                        x_bot, y_bot = moveViaPriority(mapVal,priorityMoves,"X",count)
 
 
                      
@@ -41,7 +42,7 @@ def levelTwo(mapVal,move):
                     if(x_bot == None):
                         x_bot, y_bot = checkBlockingMove(mapVal,"X")
                     if(x_bot == None):
-                        x_bot, y_bot = moveViaPriority(mapVal,priorityMoves, "O")
+                        x_bot, y_bot = moveViaPriority(mapVal,priorityMoves, "O",count)
 
                     mapVal = move.addO(mapVal,x_bot,y_bot) 
                 move.moveNow = "X"
@@ -52,21 +53,71 @@ def levelTwo(mapVal,move):
     printMaze(mapVal)
     checkWinningMove(mapVal,"X")
     return None
-def moveViaPriority(mapVal, priority,symbol):
+def moveViaPriority(mapVal, priority,symbol, count):
     x = 0
     y = 0
-    blank = getAllBlankMoves(mapVal)
-    scannedValues = []
-    for b in blank:
-        scannedValues.append( (scanAllwithCount(mapVal,b,symbol) ,b[0],b[1]) )
-    print(scannedValues)
-    # print(blank)
-    # moves = getAllMoves(mapVal,"X")
-    # print(moves)
+    print(str(count) + " COUNT")
+    # if(count != 0 ):
+        # blank = getAllBlankMoves(mapVal)
+        # scannedValues = []
+        # for b in blank:
+        #     scannedValues.append( (scanAllwithCount(mapVal,b,symbol) ,b[0],b[1]) )
+        # highest = (0,0,0)
+        # for i in scannedValues:
+        #     # x = i[1]
+        #     # y = i[2]
+        #     print("Highest: "+ str(highest[0]) + " current: " +  str(i[0]) + " coordinates: " + str(i[1]) + " " + str(i[2]))
+        #     if(highest[0] < i[0]):
+        #         highest = (i[0], i[1], i[2])
+        #         # highest[1] = i[1]
+        #         # highest[2] = i[2]
+        #     # if(higest < i[0]):
+        #     # if(highest < i[0] and mapVal[i[1]][i[2]] == "_" ):
+        #     #     x_new = i[1]
+        #     #     y_new = i[2]
+        #     #     print("INSIDE")
+        #     #     print(str(i[1]) + " " + str(i[2]))
+        #     # print(str(x_new) + " xy " + str(y_new))
+        #     # return x, y
+        #     # print("OUTSIDE")
+        #     # print(str(i[1]) + " " + str(i[2]))
+        # return highest[1], highest[2]
+        # print("h: "+ str(highest[0]) + "x: "+ str(highest[1]) + "y: "+ str(highest[2]))
+    # else:
+    if(symbol == "O"):
+        if(mapVal[0][0] == "X" and mapVal[2][2] == "X" and mapVal[1][1] == "O"):
+            if(mapVal[1][0] == "_"):
+                return 1, 0
+            elif(mapVal[1][2] == "_"):
+                return 1, 2         
+        if(mapVal[0][2] == "X" and mapVal[2][0] == "X" and mapVal[1][1] == "O"):
+            if(mapVal[1][0] == "_"):
+                return 1, 0
+            elif(mapVal[1][2] == "_"):
+                return 1, 2          
+    else:
+        if(mapVal[0][0] == "O" and mapVal[2][2] == "O" and mapVal[1][1] == "X"):
+            if(mapVal[1][0] == "_"):
+                return 1, 0
+            elif(mapVal[1][2] == "_"):
+                return 1, 2
     for p in priority:
         if(mapVal[p[0]][p[1]] == "_"):
             return p[0], p[1]
-    
+
+
+    # 0 _ X
+    # _ 0 _
+    # X _ X
+
+    # X _ 0
+    # _ 0 _
+    # X _ X
+
+    # X _ 0
+    # _ 0 _
+    # X _ X
+
 
     return x, y
 def getAllBlankMoves(mapVal):
@@ -86,61 +137,53 @@ def getAllMoves(mapVal, symbol):
 
     return moves
 def scanAllwithCount(mapVal, position, symbol):
+    # mapVal[0][0] = "_"
+    # mapVal[0][1] = "_"
+    # mapVal[0][2] = "X"
 
+    # mapVal[1][0] = "_"
+    # mapVal[1][1] = "_"
+    # mapVal[1][2] = "X"
+
+    # mapVal[2][0] = "X"
+    # mapVal[2][1] = "_"
+    # mapVal[2][2] = "_"
 
     x = position[0]
     y = position[1]
     count = 0
-
+    # print(str(x) + " " +str(y))
+    # print("---")
     #SOUTH
     for i in range(3 - x):
+
         if mapVal[x + i][y] == symbol:
             count = count + 1
             break
 
     #NORTH        
     for i in reversed(range(x)):
+
         if mapVal[i ][y] == symbol:
             count = count + 1
             break
-          
+
     #EAST        
     for i in range(3 - y):
-        if mapVal[x][y + i] == "G":
+        if mapVal[x][y + i] == symbol:
             count = count + 1
             break
+ 
 
     #WEST
     for i in reversed(range(y)):
+  
         if mapVal[x][i] == symbol:
             count = count + 1
             break
 
-    #NORTH EAST
-    for i in reversed(range(x)):
-        if(i > 0 and i < 1):
-            if mapVal[x - i][y + i] == symbol:
-                count = count + 1
-                break
-    #NORTH WEST
-    for i in reversed(range(x)):
-        if(i > 0 and i < 1):
-            if mapVal[x - i][y - i] == symbol:
-                count = count + 1
-                break
-    #SOUTH EAST
-    for i in range(3 - y):
-        if(i > 0 and i < 1):
-            if mapVal[x + i][y + i] == symbol:
-                count = count + 1
-                break
-    #SOUTH WEST
-    for i in range(3 - y):
-        if(i > 0 and i < 1):
-            if mapVal[x + i][y - i] == symbol:
-                count = count + 1
-                break 
 
+ 
     return count
 def checkBlockingMove(mapVal,symbol):
         x = None
